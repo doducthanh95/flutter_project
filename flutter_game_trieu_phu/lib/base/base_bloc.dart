@@ -1,12 +1,11 @@
+import 'package:flutter/widgets.dart';
 import 'package:fluttergametrieuphu/di/Injection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BaseBloc {
-  String text;
-  //Repository
-  //Preference
-  //Session
+  SharedPreferences preferences;
 
-  BaseBloc(this.text);
+  BaseBloc(this.preferences);
 
   void depose() {}
 

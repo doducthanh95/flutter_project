@@ -1,0 +1,4 @@
+#Wed Aug 12 09:26:58 NOVT 2020
+base.0=D\:\\GitHub\\flutter_project\\flutter_game_trieu_phu\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
