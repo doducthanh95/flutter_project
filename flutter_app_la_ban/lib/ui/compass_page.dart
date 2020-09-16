@@ -34,7 +34,6 @@ class _CompassPageState extends State<CompassPage> {
     // });
 
     _compassSub = FlutterCompass.events.listen((value) {
-      print("ddthanh goc alpha $value");
       bloc.setValueDirection(value + 5);
       widget.callBack(value + 5);
     });

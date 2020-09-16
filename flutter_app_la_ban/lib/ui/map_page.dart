@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_la_ban/bloc/compass_bloc.dart';
 import 'package:flutter_app_la_ban/bloc/map_bloc.dart';
+import 'package:flutter_app_la_ban/ui/search_address_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:route_transitions/route_transitions.dart';
 
 class MapPage extends StatefulWidget {
   double agle = 0;
@@ -72,6 +74,14 @@ class _MapPageState extends State<MapPage> {
           _controller.complete(controller);
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.search),
+        onPressed: () {
+          Navigator.of(context).push(PageRouteTransition(
+              animationType: AnimationType.fade,
+              builder: (context) => SearchAddressPage()));
+        },
+      ),
     ); // This trailing comma makes auto-formatting nicer for build methods.
   }
 
@@ -85,10 +95,5 @@ class _MapPageState extends State<MapPage> {
       print("ddthanh: $data");
       print(value.getVisibleRegion().then((value1) => print(value1)));
     });
-  }
-
-  Future<void> _goToTheLake() async {
-    final GoogleMapController controller = await _controller.future;
-    controller.moveCamera(CameraUpdate.newCameraPosition(_kLake));
   }
 }
