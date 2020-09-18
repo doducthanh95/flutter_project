@@ -34,8 +34,10 @@ dependencies:
   flutter_compass: ^0.4.3
   connectivity: ^0.4.9+2
   geolocator: ^6.0.0+4
-  modal_bottom_sheet: 0.2.0+1
   permission_handler: ^5.0.1+1
+  flutter_google_places: ^0.2.6
+  google_maps_webservice: ^0.0.18
+  sensors: ^0.4.2+4
 
 dev_dependencies:
   flutter_test:

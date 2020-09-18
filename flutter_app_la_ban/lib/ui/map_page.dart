@@ -3,11 +3,19 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_la_ban/bloc/compass_bloc.dart';
 import 'package:flutter_app_la_ban/bloc/map_bloc.dart';
+import 'package:flutter_app_la_ban/const/const_value.dart';
 import 'package:flutter_app_la_ban/ui/search_address_page.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:route_transitions/route_transitions.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:google_maps_webservice/directions.dart';
+import 'package:google_maps_webservice/distance.dart';
+import 'package:google_maps_webservice/geocoding.dart';
+import 'package:google_maps_webservice/geolocation.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:google_maps_webservice/staticmap.dart';
+import 'package:google_maps_webservice/timezone.dart';
 
 class MapPage extends StatefulWidget {
   double agle = 0;
@@ -44,7 +52,7 @@ class _MapPageState extends State<MapPage> {
     // TODO: implement initState
     bloc.getLocation().then((position) {
       _position = position;
-      _updatePosition(position, widget.agle);
+      _updatePosition(position, 0);
     });
 
     // compassBloc.changeMapViewStream.listen((value) {
@@ -70,18 +78,30 @@ class _MapPageState extends State<MapPage> {
         mapToolbarEnabled: true,
         compassEnabled: false,
         mapType: MapType.hybrid,
+        indoorViewEnabled: true,
         initialCameraPosition: _kGooglePlex,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.search),
-        onPressed: () {
-          showCupertinoModalBottomSheet(
-              context: context,
-              builder: (context, scroll) => SearchAddressPage());
-        },
+      floatingActionButton: Padding(
+        padding:
+            EdgeInsets.only(right: (MediaQuery.of(context).size.width - 100)),
+        child: FloatingActionButton(
+          child: Icon(Icons.search),
+          onPressed: () async {
+            Prediction p = await PlacesAutocomplete.show(
+                context: context,
+                apiKey: kGoogleApiWebKey,
+                mode: Mode.overlay, // Mode.fullscreen
+                language: "vi",
+                components: [new Component(Component.country, "vn")]);
+            print("ddthanh $p");
+            // Navigator.of(context).push(PageRouteTransition(
+            //     animationType: AnimationType.slide_right,
+            //     builder: (context) => SearchAddressPage()));
+          },
+        ),
       ),
     ); // This trailing comma makes auto-formatting nicer for build methods.
   }

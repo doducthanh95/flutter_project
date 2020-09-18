@@ -7,6 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
 import 'package:charcode/ascii.dart';
 import 'package:charcode/html_entity.dart';
+import 'package:sensors/sensors.dart';
 
 class CompassPage extends StatefulWidget {
   double direction;
@@ -29,7 +30,7 @@ class _CompassPageState extends State<CompassPage> {
     // TODO: implement initState
     super.initState();
 
-    // userAccelerometerEvents.listen((event) {
+    // accelerometerEvents.listen((AccelerometerEvent event) {
     //   bloc.onSensorAcceleChanged(event);
     // });
     //
@@ -38,8 +39,7 @@ class _CompassPageState extends State<CompassPage> {
     // });
 
     _compassSub = FlutterCompass.events.listen((value) {
-      double coordinate =
-          (value + 90) < 360 ? (value + 90) : (value + 90 - 360);
+      double coordinate = value;
       setState(() {
         alpha = double.parse((coordinate).toStringAsFixed(2)).toString();
       });
