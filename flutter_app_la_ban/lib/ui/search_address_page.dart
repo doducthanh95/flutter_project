@@ -20,7 +20,7 @@ class _SearchAddressPageState extends State<SearchAddressPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.close),
           onPressed: () {
             Navigator.of(context).pop();
           },

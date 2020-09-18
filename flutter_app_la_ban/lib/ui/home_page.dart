@@ -4,6 +4,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_la_ban/ui/compass_page.dart';
 import 'package:flutter_app_la_ban/ui/map_page.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   double agle = 0;
+  bool _hasPermission = false;
 
   StreamSubscription _subConnection;
 
@@ -19,7 +21,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _subConnection = Connectivity().onConnectivityChanged.listen((event) {});
   }
 
   @override
@@ -47,9 +48,6 @@ class _HomePageState extends State<HomePage> {
           ))
         ],
       ),
-      // child: Center(
-      //   child: CompassPage(),
-      // ),
     );
   }
 }

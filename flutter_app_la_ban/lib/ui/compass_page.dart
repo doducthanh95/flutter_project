@@ -38,8 +38,10 @@ class _CompassPageState extends State<CompassPage> {
     // });
 
     _compassSub = FlutterCompass.events.listen((value) {
+      double coordinate =
+          (value + 90) < 360 ? (value + 90) : (value + 90 - 360);
       setState(() {
-        alpha = double.parse(value.toStringAsFixed(2)).toString();
+        alpha = double.parse((coordinate).toStringAsFixed(2)).toString();
       });
       bloc.setValueDirection(value + 5);
       widget.callBack(value + 5);
