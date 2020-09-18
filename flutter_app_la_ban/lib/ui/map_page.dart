@@ -6,6 +6,7 @@ import 'package:flutter_app_la_ban/bloc/map_bloc.dart';
 import 'package:flutter_app_la_ban/ui/search_address_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:route_transitions/route_transitions.dart';
 
 class MapPage extends StatefulWidget {
@@ -77,9 +78,9 @@ class _MapPageState extends State<MapPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.search),
         onPressed: () {
-          Navigator.of(context).push(PageRouteTransition(
-              animationType: AnimationType.fade,
-              builder: (context) => SearchAddressPage()));
+          showCupertinoModalBottomSheet(
+              context: context,
+              builder: (context, scroll) => SearchAddressPage());
         },
       ),
     ); // This trailing comma makes auto-formatting nicer for build methods.

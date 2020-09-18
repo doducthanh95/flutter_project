@@ -34,9 +34,7 @@ dependencies:
   flutter_compass: ^0.4.3
   connectivity: ^0.4.9+2
   geolocator: ^6.0.0+4
-  sensors: ^0.4.2+4
-
-  after_layout: ^1.0.7+2
+  modal_bottom_sheet: 0.2.0+1
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,6 @@
 import 'dart:ffi';
 import 'dart:math';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sensors/sensors.dart';
 
 class CompassBloc {
   final _bloc = BehaviorSubject<double>();
@@ -97,48 +95,48 @@ class CompassBloc {
     return true;
   }
 
-  List<double> getOrientation(List<double> R, List<double> values) {
-    values[0] = atan2(R[1], R[4]);
-    values[1] = asin(-R[7]);
-    values[2] = atan2(-R[6], R[8]);
-    return values;
-  }
-
-  onSensorAcceleChanged(UserAccelerometerEvent event) {
-    final double alpha = 0.9;
-
-    mGravity[0] = 0.9 * mGravity[0] + (1 - alpha) * event.x;
-    mGravity[1] = 0.9 * mGravity[1] + (1 - alpha) * event.y;
-    mGravity[2] = 0.9 * mGravity[2] + (1 - alpha) * event.z;
-
-    bool success = getRorarionMatrix(R, I, mGravity, mGeomagnetic);
-    if (success) {
-      List<double> orientation = [];
-      getOrientation(R, orientation);
-      azimuth = orientation[0] * 180 / pi;
-      azimuth = (azimuth + azimuthFix + 360) % 360;
-      _bloc.add(azimuth);
-      print("ddthanh $azimuth");
-    }
-  }
-
-  double onSensorMagneChanged(GyroscopeEvent event) {
-    final double alpha = 0.95;
-
-    mGravity[0] = 0.9 * mGeomagnetic[0] + (1 - alpha) * event.x;
-    mGravity[1] = 0.9 * mGeomagnetic[1] + (1 - alpha) * event.y;
-    mGravity[2] = 0.9 * mGeomagnetic[2] + (1 - alpha) * event.z;
-
-    bool success = getRorarionMatrix(R, I, mGravity, mGeomagnetic);
-    if (success) {
-      List<double> orientation = [];
-      getOrientation(R, orientation);
-      azimuth = orientation[0] * 180 / pi;
-      azimuth = (azimuth + azimuthFix + 360) % 360;
-      print("ddthanh $azimuth");
-      _bloc.add(azimuth);
-    }
-  }
+  // List<double> getOrientation(List<double> R, List<double> values) {
+  //   values[0] = atan2(R[1], R[4]);
+  //   values[1] = asin(-R[7]);
+  //   values[2] = atan2(-R[6], R[8]);
+  //   return values;
+  // }
+  //
+  // onSensorAcceleChanged(UserAccelerometerEvent event) {
+  //   final double alpha = 0.9;
+  //
+  //   mGravity[0] = 0.9 * mGravity[0] + (1 - alpha) * event.x;
+  //   mGravity[1] = 0.9 * mGravity[1] + (1 - alpha) * event.y;
+  //   mGravity[2] = 0.9 * mGravity[2] + (1 - alpha) * event.z;
+  //
+  //   bool success = getRorarionMatrix(R, I, mGravity, mGeomagnetic);
+  //   if (success) {
+  //     List<double> orientation = [];
+  //     getOrientation(R, orientation);
+  //     azimuth = orientation[0] * 180 / pi;
+  //     azimuth = (azimuth + azimuthFix + 360) % 360;
+  //     _bloc.add(azimuth);
+  //     print("ddthanh $azimuth");
+  //   }
+  // }
+  //
+  // double onSensorMagneChanged(GyroscopeEvent event) {
+  //   final double alpha = 0.95;
+  //
+  //   mGravity[0] = 0.9 * mGeomagnetic[0] + (1 - alpha) * event.x;
+  //   mGravity[1] = 0.9 * mGeomagnetic[1] + (1 - alpha) * event.y;
+  //   mGravity[2] = 0.9 * mGeomagnetic[2] + (1 - alpha) * event.z;
+  //
+  //   bool success = getRorarionMatrix(R, I, mGravity, mGeomagnetic);
+  //   if (success) {
+  //     List<double> orientation = [];
+  //     getOrientation(R, orientation);
+  //     azimuth = orientation[0] * 180 / pi;
+  //     azimuth = (azimuth + azimuthFix + 360) % 360;
+  //     print("ddthanh $azimuth");
+  //     _bloc.add(azimuth);
+  //   }
+  // }
 
   dispose() {
     _bloc.close();

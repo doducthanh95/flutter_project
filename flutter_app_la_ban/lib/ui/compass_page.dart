@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_app_la_ban/bloc/compass_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
-import 'package:sensors/sensors.dart';
+import 'package:charcode/ascii.dart';
+import 'package:charcode/html_entity.dart';
 
 class CompassPage extends StatefulWidget {
   double direction;
@@ -20,6 +22,8 @@ class _CompassPageState extends State<CompassPage> {
 
   StreamSubscription _compassSub;
 
+  String alpha = "0";
+
   @override
   void initState() {
     // TODO: implement initState
@@ -34,6 +38,9 @@ class _CompassPageState extends State<CompassPage> {
     // });
 
     _compassSub = FlutterCompass.events.listen((value) {
+      setState(() {
+        alpha = double.parse(value.toStringAsFixed(2)).toString();
+      });
       bloc.setValueDirection(value + 5);
       widget.callBack(value + 5);
     });
@@ -50,19 +57,75 @@ class _CompassPageState extends State<CompassPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: StreamBuilder<double>(
-            stream: bloc.compassStream,
-            builder: (context, snapshot) {
-              double value = widget.direction ?? 0;
-              if (snapshot.hasData) {
-                value = snapshot.data;
-                return Transform.rotate(
-                  angle: value * (pi / 180) * -1,
-                  child: Image.asset("assets/images/compass.png"),
-                );
-              } else {
-                return Container();
-              }
-            }));
+        child: Center(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            color: Colors.black.withOpacity(0.1),
+          ),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                child: StreamBuilder<double>(
+                    stream: bloc.compassStream,
+                    builder: (context, snapshot) {
+                      double value = widget.direction ?? 0;
+                      if (snapshot.hasData) {
+                        value = snapshot.data;
+                        return Transform.rotate(
+                          angle: value * (pi / 180) * -1,
+                          child: Container(
+                              child: Image.asset(
+                            "assets/images/compass.png",
+                            width: MediaQuery.of(context).size.width * 4 / 5,
+                            height: MediaQuery.of(context).size.width * 4 / 5,
+                          )),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    }),
+              ),
+              Container(
+                child: Image.asset(
+                  "assets/images/coordinate.png",
+                  width: MediaQuery.of(context).size.width * 4 / 5,
+                  height: MediaQuery.of(context).size.width * 4 / 5,
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+            top: 150,
+            child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(80),
+                  color: Colors.black.withOpacity(0.2),
+                ),
+                padding: EdgeInsets.all(12),
+                child: RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: alpha + "\u00B0",
+                        style: TextStyle(
+                            color: Colors.yellow,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 26)),
+                    TextSpan(
+                        text: " Tây",
+                        style: TextStyle(
+                            color: Colors.yellow,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 18))
+                  ]),
+                )),
+          )
+        ],
+      ),
+    ));
   }
 }

@@ -38,17 +38,13 @@ class _HomePageState extends State<HomePage> {
           MapPage(
             agle: agle,
           ),
-          IgnorePointer(
-              child: Container(
-                  width: 200,
-                  height: 200,
-                  child: CompassPage(
-                    callBack: (double value) {
-                      setState(() {
-                        agle = value;
-                      });
-                    },
-                  )))
+          IgnorePointer(child: CompassPage(
+            callBack: (double value) {
+              setState(() {
+                agle = value;
+              });
+            },
+          ))
         ],
       ),
       // child: Center(
