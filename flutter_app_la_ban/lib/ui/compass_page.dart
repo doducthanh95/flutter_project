@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app_la_ban/bloc/compass_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
 import 'package:charcode/ascii.dart';
 import 'package:charcode/html_entity.dart';
 import 'package:sensors/sensors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CompassPage extends StatefulWidget {
   double direction;
@@ -18,7 +21,7 @@ class CompassPage extends StatefulWidget {
   _CompassPageState createState() => _CompassPageState();
 }
 
-class _CompassPageState extends State<CompassPage> {
+class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
   final bloc = CompassBloc();
 
   StreamSubscription _compassSub;
@@ -28,15 +31,9 @@ class _CompassPageState extends State<CompassPage> {
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
-    // accelerometerEvents.listen((AccelerometerEvent event) {
-    //   bloc.onSensorAcceleChanged(event);
-    // });
-    //
-    // gyroscopeEvents.listen((event) {
-    //   bloc.onSensorMagneChanged(event);
-    // });
+    super.initState();
 
     _compassSub = FlutterCompass.events.listen((value) {
       double coordinate = value;

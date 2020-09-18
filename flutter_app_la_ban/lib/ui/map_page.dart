@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_la_ban/bloc/compass_bloc.dart';
 import 'package:flutter_app_la_ban/bloc/map_bloc.dart';
@@ -16,6 +17,8 @@ import 'package:google_maps_webservice/geolocation.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:google_maps_webservice/staticmap.dart';
 import 'package:google_maps_webservice/timezone.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MapPage extends StatefulWidget {
   double agle = 0;
@@ -50,10 +53,8 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     // TODO: implement initState
-    bloc.getLocation().then((position) {
-      _position = position;
-      _updatePosition(position, 0);
-    });
+    _getCurrentPosition();
+    _fetchPermissionStatus();
 
     // compassBloc.changeMapViewStream.listen((value) {
     //   print("ddthanh listen compass change");
@@ -115,6 +116,55 @@ class _MapPageState extends State<MapPage> {
       value.moveCamera(CameraUpdate.newCameraPosition(position));
       print("ddthanh: $data");
       print(value.getVisibleRegion().then((value1) => print(value1)));
+    });
+  }
+
+  void _fetchPermissionStatus() async {
+    if (await _checkIsFirstRunApp()) {
+      return;
+    }
+    var permissionLocation = await Permission.locationWhenInUse.status;
+    if (permissionLocation != PermissionStatus.granted) {
+      //AppSettings.openLocationSettings();
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                content: Text(
+                    "Bạn cần cấp quyền vị trí cho ứng dụng để hiển thị chính xác bản đồ"),
+                actions: [
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("Huỷ"),
+                  ),
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      AppSettings.openLocationSettings().then((value) {
+                        _getCurrentPosition();
+                      });
+                    },
+                    child: Text("Đồng ý"),
+                  )
+                ],
+              ));
+    }
+  }
+
+  Future<bool> _checkIsFirstRunApp() async {
+    SharedPreferences _preference = await SharedPreferences.getInstance();
+    if (_preference.getBool("IsFirstRun") ?? true) {
+      _preference.setBool("IsFirstRun", false);
+      return true;
+    }
+    return false;
+  }
+
+  _getCurrentPosition() async {
+    bloc.getLocation().then((position) {
+      _position = position;
+      _updatePosition(position, 0);
     });
   }
 }
