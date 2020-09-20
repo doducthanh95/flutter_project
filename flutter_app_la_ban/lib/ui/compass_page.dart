@@ -27,6 +27,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
   StreamSubscription _compassSub;
 
   String alpha = "0";
+  double alphaRotate = 0;
 
   @override
   void initState() {
@@ -37,11 +38,12 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
 
     _compassSub = FlutterCompass.events.listen((value) {
       double coordinate = value;
+      alphaRotate = coordinate;
       setState(() {
         alpha = double.parse((coordinate).toStringAsFixed(2)).toString();
       });
-      bloc.setValueDirection(value + 5);
-      widget.callBack(value + 5);
+      bloc.setValueDirection(coordinate);
+      widget.callBack(coordinate);
     });
   }
 
@@ -99,7 +101,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
             ],
           ),
           Positioned(
-            top: 150,
+            top: 80,
             child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(80),
@@ -115,7 +117,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
                             fontWeight: FontWeight.bold,
                             fontSize: 26)),
                     TextSpan(
-                        text: " Tây",
+                        text: " " + _getDirectionString(alphaRotate),
                         style: TextStyle(
                             color: Colors.yellow,
                             fontWeight: FontWeight.normal,
@@ -126,5 +128,27 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
         ],
       ),
     ));
+  }
+
+  String _getDirectionString(double alpha) {
+    if (alpha <= 22.5) {
+      return 'Bắc';
+    } else if (alpha > 22.5 && alpha <= 67.5) {
+      return 'Đông Bắc';
+    } else if (alpha > 67.5 && alpha <= 112.5) {
+      return 'Đông';
+    } else if (alpha > 112.5 && alpha <= 157.5) {
+      return 'Đông Nam';
+    } else if (alpha > 157.5 && alpha <= 202.5) {
+      return 'Nam';
+    } else if (alpha > 202.5 && alpha <= 247.5) {
+      return 'Tây Nam';
+    } else if (alpha > 247.5 && alpha <= 292.5) {
+      return 'Tây';
+    } else if (alpha > 292.5 && alpha <= 337.5) {
+      return 'Tây Bắc';
+    } else {
+      return 'Bắc';
+    }
   }
 }

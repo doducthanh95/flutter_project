@@ -20,6 +20,8 @@ import 'package:google_maps_webservice/timezone.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiAndroidKey);
+
 class MapPage extends StatefulWidget {
   double agle = 0;
 
@@ -34,7 +36,7 @@ class _MapPageState extends State<MapPage> {
 
   final bloc = MapBloc();
   final compassBloc = CompassBloc();
-
+  final homeScaffoldKey = GlobalKey<ScaffoldState>();
   Position _position;
 
   CameraPosition _kGooglePlex = CameraPosition(
@@ -73,6 +75,7 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: homeScaffoldKey,
       body: GoogleMap(
         buildingsEnabled: true,
         myLocationEnabled: true,
@@ -92,15 +95,13 @@ class _MapPageState extends State<MapPage> {
           child: Icon(Icons.search),
           onPressed: () async {
             Prediction p = await PlacesAutocomplete.show(
-                context: context,
-                apiKey: kGoogleApiWebKey,
-                mode: Mode.overlay, // Mode.fullscreen
-                language: "vi",
-                components: [new Component(Component.country, "vn")]);
-            print("ddthanh $p");
-            // Navigator.of(context).push(PageRouteTransition(
-            //     animationType: AnimationType.slide_right,
-            //     builder: (context) => SearchAddressPage()));
+              context: context,
+              apiKey: kGoogleApiAndroidKey,
+              mode: Mode.overlay, // Mode.fullscreen
+              language: "vi",
+              components: [new Component(Component.country, "vn")],
+            );
+            displayPrediction(p, homeScaffoldKey.currentState);
           },
         ),
       ),
@@ -166,5 +167,19 @@ class _MapPageState extends State<MapPage> {
       _position = position;
       _updatePosition(position, 0);
     });
+  }
+
+  Future<Null> displayPrediction(Prediction p, ScaffoldState scaffold) async {
+    if (p != null) {
+      // get detail (lat/lng)
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId);
+      final lat = detail.result.geometry.location.lat;
+      final lng = detail.result.geometry.location.lng;
+
+      scaffold.showSnackBar(
+        SnackBar(content: Text("${p.description} - $lat/$lng")),
+      );
+    }
   }
 }
