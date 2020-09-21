@@ -80,7 +80,7 @@ class _MapPageState extends State<MapPage> {
         buildingsEnabled: true,
         myLocationEnabled: true,
         mapToolbarEnabled: true,
-        compassEnabled: false,
+        compassEnabled: true,
         mapType: MapType.hybrid,
         indoorViewEnabled: true,
         initialCameraPosition: _kGooglePlex,
