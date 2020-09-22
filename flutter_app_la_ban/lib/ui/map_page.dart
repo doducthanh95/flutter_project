@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:ILaKinh/bloc/compass_bloc.dart';
+import 'package:ILaKinh/bloc/map_bloc.dart';
+import 'package:ILaKinh/const/const_value.dart';
 import 'package:app_settings/app_settings.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_la_ban/bloc/compass_bloc.dart';
-import 'package:flutter_app_la_ban/bloc/map_bloc.dart';
-import 'package:flutter_app_la_ban/const/const_value.dart';
-import 'package:flutter_app_la_ban/ui/search_address_page.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -31,7 +31,7 @@ class MapPage extends StatefulWidget {
   _MapPageState createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Completer<GoogleMapController> _controller = Completer();
 
   final bloc = MapBloc();
@@ -52,9 +52,12 @@ class _MapPageState extends State<MapPage> {
       tilt: 59.440717697143555,
       zoom: 19.151926040649414);
 
+  StreamSubscription subscription;
+
   @override
   void initState() {
     // TODO: implement initState
+    WidgetsBinding.instance.addObserver(this);
     _getCurrentPosition();
     _fetchPermissionStatus();
 
@@ -63,6 +66,26 @@ class _MapPageState extends State<MapPage> {
     //   _updatePosition(_position, value);
     // });
     super.initState();
+
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      // Got a new connectivity status!
+      if (result != ConnectivityResult.mobile ||
+          result != ConnectivityResult.wifi) {
+        homeScaffoldKey.currentState.showSnackBar(SnackBar(
+          content: Text("Không có kết nối internet"),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 2),
+        ));
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() async {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
   }
 
   @override
@@ -70,6 +93,7 @@ class _MapPageState extends State<MapPage> {
     // TODO: implement dispose
     super.dispose();
     bloc.dispose();
+    subscription.cancel();
   }
 
   @override

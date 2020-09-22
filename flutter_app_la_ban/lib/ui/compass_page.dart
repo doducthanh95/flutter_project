@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:ILaKinh/bloc/compass_bloc.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app_la_ban/bloc/compass_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
