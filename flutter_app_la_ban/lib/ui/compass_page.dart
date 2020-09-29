@@ -1,21 +1,16 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:ILaKinh/bloc/compass_bloc.dart';
-import 'package:app_settings/app_settings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_compass/flutter_compass.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
-import 'package:charcode/ascii.dart';
-import 'package:charcode/html_entity.dart';
-import 'package:sensors/sensors.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CompassPage extends StatefulWidget {
   double direction;
   Function(double) callBack;
-  CompassPage({this.direction, this.callBack});
+  BehaviorSubject object;
+  CompassPage({this.direction, this.callBack, this.object});
 
   @override
   _CompassPageState createState() => _CompassPageState();
@@ -43,7 +38,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
         alpha = double.parse((coordinate).toStringAsFixed(2)).toString();
       });
       bloc.setValueDirection(coordinate);
-      widget.callBack(coordinate);
+      widget.object.add(coordinate);
     });
   }
 
@@ -79,12 +74,15 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
                         value = snapshot.data;
                         return Transform.rotate(
                           angle: value * (pi / 180) * -1,
-                          child: Container(
+                          child: Opacity(
+                              opacity: 0.7,
                               child: Image.asset(
-                            "assets/images/compass.png",
-                            width: MediaQuery.of(context).size.width * 4 / 5,
-                            height: MediaQuery.of(context).size.width * 4 / 5,
-                          )),
+                                "assets/images/compass.png",
+                                width:
+                                    MediaQuery.of(context).size.width * 4 / 5,
+                                height:
+                                    MediaQuery.of(context).size.width * 4 / 5,
+                              )),
                         );
                       } else {
                         return Container();

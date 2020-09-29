@@ -18,14 +18,14 @@ import 'package:google_maps_webservice/places.dart';
 import 'package:google_maps_webservice/staticmap.dart';
 import 'package:google_maps_webservice/timezone.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiAndroidKey);
 
 class MapPage extends StatefulWidget {
-  double agle = 0;
-
-  MapPage({this.agle});
+  final BehaviorSubject object;
+  MapPage({this.object});
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -37,34 +37,37 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   final bloc = MapBloc();
   final compassBloc = CompassBloc();
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
-  Position _position;
+  Position _position =
+      Position(latitude: 37.42796133580664, longitude: -122.085749655962);
+  double agle = 0;
 
-  CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    tilt: 10,
-    bearing: 90,
-    zoom: 18,
-  );
-
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.43296265331129, -122.08832357078792),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  CameraPosition _kGooglePlex;
 
   StreamSubscription subscription;
+  StreamSubscription subscriptionCompass;
 
   @override
   void initState() {
+    _kGooglePlex = CameraPosition(
+      target: LatLng(_position.latitude, _position.longitude),
+      tilt: 10,
+      bearing: agle,
+      zoom: 18,
+    );
     // TODO: implement initState
     WidgetsBinding.instance.addObserver(this);
     _getCurrentPosition();
     _fetchPermissionStatus();
 
-    // compassBloc.changeMapViewStream.listen((value) {
-    //   print("ddthanh listen compass change");
-    //   _updatePosition(_position, value);
-    // });
+    subscriptionCompass = widget.object.stream.listen((event) {
+      _kGooglePlex = CameraPosition(
+        target: LatLng(_position.latitude, _position.longitude),
+        tilt: 10,
+        bearing: event,
+        zoom: 18,
+      );
+      setState(() {});
+    });
     super.initState();
 
     subscription = Connectivity()
@@ -94,6 +97,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     super.dispose();
     bloc.dispose();
     subscription.cancel();
+    subscriptionCompass.cancel();
   }
 
   @override
@@ -110,6 +114,10 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         initialCameraPosition: _kGooglePlex,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
+        },
+        onCameraMove: (p) {
+          _position = Position(
+              latitude: p.target.latitude, longitude: p.target.longitude);
         },
       ),
       floatingActionButton: Padding(
@@ -200,6 +208,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
           await _places.getDetailsByPlaceId(p.placeId);
       final lat = detail.result.geometry.location.lat;
       final lng = detail.result.geometry.location.lng;
+
+      _updatePosition(Position(longitude: lng, latitude: lat), 0);
 
       scaffold.showSnackBar(
         SnackBar(content: Text("${p.description} - $lat/$lng")),
