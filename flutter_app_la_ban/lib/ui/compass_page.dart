@@ -75,7 +75,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
                         return Transform.rotate(
                           angle: value * (pi / 180) * -1,
                           child: Opacity(
-                              opacity: 0.7,
+                              opacity: 0.8,
                               child: Image.asset(
                                 "assets/images/compass.png",
                                 width:
@@ -92,8 +92,9 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
               Container(
                 child: Image.asset(
                   "assets/images/coordinate.png",
-                  width: MediaQuery.of(context).size.width * 4 / 5,
-                  height: MediaQuery.of(context).size.width * 4 / 5,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  fit: BoxFit.fill,
                 ),
               ),
             ],

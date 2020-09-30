@@ -59,15 +59,6 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     _getCurrentPosition();
     _fetchPermissionStatus();
 
-    subscriptionCompass = widget.object.stream.listen((event) {
-      _kGooglePlex = CameraPosition(
-        target: LatLng(_position.latitude, _position.longitude),
-        tilt: 10,
-        bearing: event,
-        zoom: 18,
-      );
-      setState(() {});
-    });
     super.initState();
 
     subscription = Connectivity()
@@ -108,6 +99,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         buildingsEnabled: true,
         myLocationEnabled: true,
         mapToolbarEnabled: true,
+        rotateGesturesEnabled: false,
         compassEnabled: true,
         mapType: MapType.hybrid,
         indoorViewEnabled: true,
