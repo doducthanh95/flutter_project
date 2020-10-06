@@ -39,7 +39,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
   Position _position =
       Position(latitude: 37.42796133580664, longitude: -122.085749655962);
-  double agle = 0;
+  double angle = 0;
+  double _zoom = 18;
 
   CameraPosition _kGooglePlex;
 
@@ -51,8 +52,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     _kGooglePlex = CameraPosition(
       target: LatLng(_position.latitude, _position.longitude),
       tilt: 10,
-      bearing: agle,
-      zoom: 18,
+      bearing: angle,
+      zoom: _zoom,
     );
     // TODO: implement initState
     WidgetsBinding.instance.addObserver(this);
@@ -73,6 +74,11 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
           duration: Duration(seconds: 2),
         ));
       }
+    });
+
+    subscriptionCompass = widget.object.listen((value) {
+      angle = value;
+      _updatePosition(_position, angle);
     });
   }
 
@@ -107,7 +113,9 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
+        
         onCameraMove: (p) {
+          _zoom = p.zoom;
           _position = Position(
               latitude: p.target.latitude, longitude: p.target.longitude);
         },
@@ -137,10 +145,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       var position = CameraPosition(
           target: LatLng(data.latitude, data.longitude),
           bearing: agle ?? 0,
-          zoom: 18);
+          zoom: _zoom);
       value.moveCamera(CameraUpdate.newCameraPosition(position));
-      print("ddthanh: $data");
-      print(value.getVisibleRegion().then((value1) => print(value1)));
     });
   }
 
@@ -200,6 +206,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
           await _places.getDetailsByPlaceId(p.placeId);
       final lat = detail.result.geometry.location.lat;
       final lng = detail.result.geometry.location.lng;
+
+      _position = Position(longitude: lng, latitude: lat);
 
       _updatePosition(Position(longitude: lng, latitude: lat), 0);
 
