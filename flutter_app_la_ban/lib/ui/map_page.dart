@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ILaKinh/bloc/compass_bloc.dart';
 import 'package:ILaKinh/bloc/map_bloc.dart';
 import 'package:ILaKinh/const/const_value.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:geolocator/geolocator.dart';
@@ -14,18 +17,20 @@ import 'package:google_maps_webservice/directions.dart';
 import 'package:google_maps_webservice/distance.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/geolocation.dart';
-import 'package:google_maps_webservice/places.dart';
 import 'package:google_maps_webservice/staticmap.dart';
 import 'package:google_maps_webservice/timezone.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiAndroidKey);
 
 class MapPage extends StatefulWidget {
   final BehaviorSubject object;
-  MapPage({this.object});
+  ScreenshotController screenshotController;
+  MapPage({this.object, this.screenshotController});
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -66,8 +71,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
       // Got a new connectivity status!
-      if (result != ConnectivityResult.mobile ||
-          result != ConnectivityResult.wifi) {
+      if (!(result == ConnectivityResult.none)) {
         homeScaffoldKey.currentState.showSnackBar(SnackBar(
           content: Text("Không có kết nối internet"),
           backgroundColor: Colors.orange,
@@ -113,7 +117,6 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
-        
         onCameraMove: (p) {
           _zoom = p.zoom;
           _position = Position(
@@ -124,16 +127,9 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         padding:
             EdgeInsets.only(right: (MediaQuery.of(context).size.width - 100)),
         child: FloatingActionButton(
-          child: Icon(Icons.search),
+          child: Icon(Icons.add),
           onPressed: () async {
-            Prediction p = await PlacesAutocomplete.show(
-              context: context,
-              apiKey: kGoogleApiAndroidKey,
-              mode: Mode.overlay, // Mode.fullscreen
-              language: "vi",
-              components: [new Component(Component.country, "vn")],
-            );
-            displayPrediction(p, homeScaffoldKey.currentState);
+            _showMore();
           },
         ),
       ),
@@ -215,5 +211,61 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         SnackBar(content: Text("${p.description} - $lat/$lng")),
       );
     }
+  }
+
+  _showMore() {
+    showCupertinoModalPopup(
+        context: context,
+        builder: (builder) {
+          return CupertinoActionSheet(
+            actions: [
+              CupertinoActionSheetAction(
+                child: Text("Tìm kiếm"),
+                onPressed: _searchLocation,
+              ),
+              CupertinoActionSheetAction(
+                child: Text("Chia sẻ vị trí"),
+                onPressed: _shareLocation,
+              ),
+              CupertinoActionSheetAction(
+                child: Text("Chụp màn hình"),
+                onPressed: _captureScreen,
+              ),
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              child: Text("Hủy"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          );
+        });
+  }
+
+  _searchLocation() async {
+    Navigator.pop(context);
+    Prediction p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: kGoogleApiAndroidKey,
+      mode: Mode.overlay, // Mode.fullscreen
+      language: "vi",
+      components: [new Component(Component.country, "vn")],
+    );
+    displayPrediction(p, homeScaffoldKey.currentState);
+  }
+
+  _shareLocation() {}
+
+  _captureScreen() async {
+    Navigator.pop(context);
+    print("File Saved to Gallery");
+    widget.screenshotController
+        .capture(delay: Duration(milliseconds: 10))
+        .then((File image) async {
+      final result = await ImageGallerySaver.saveImage(image.readAsBytesSync());
+      print("File Saved to Gallery");
+    }).catchError((onError) {
+      print(onError);
+    });
   }
 }

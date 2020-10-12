@@ -40,6 +40,9 @@ dependencies:
   sensors: ^0.4.2+4
   app_settings: 4.0.3
   shared_preferences: ^0.5.10
+  screenshot: ^0.2.0
+  image_gallery_saver: '^1.6.0'
+  path_provider: ^1.6.18
 
 dev_dependencies:
   flutter_test:
