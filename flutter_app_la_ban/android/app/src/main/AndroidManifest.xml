@@ -10,11 +10,20 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
-    
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="flutter_app_la_ban"
         android:icon="@mipmap/ic_launcher">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDKo40j19wh2aXCpif579yjz7N2Qgpsy3U"/>

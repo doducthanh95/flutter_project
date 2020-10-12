@@ -28,9 +28,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiAndroidKey);
 
 class MapPage extends StatefulWidget {
-  final BehaviorSubject object;
-  ScreenshotController screenshotController;
-  MapPage({this.object, this.screenshotController});
+  MapBloc bloc;
+  MapPage({this.bloc});
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -39,13 +38,11 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Completer<GoogleMapController> _controller = Completer();
 
-  final bloc = MapBloc();
-  final compassBloc = CompassBloc();
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
   Position _position =
       Position(latitude: 37.42796133580664, longitude: -122.085749655962);
   double angle = 0;
-  double _zoom = 18;
+  double _zoom = 20;
 
   CameraPosition _kGooglePlex;
 
@@ -80,7 +77,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       }
     });
 
-    subscriptionCompass = widget.object.listen((value) {
+    subscriptionCompass = widget.bloc.stream.listen((value) {
       angle = value;
       _updatePosition(_position, angle);
     });
@@ -96,7 +93,6 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    bloc.dispose();
     subscription.cancel();
     subscriptionCompass.cancel();
   }
@@ -127,11 +123,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         padding:
             EdgeInsets.only(right: (MediaQuery.of(context).size.width - 100)),
         child: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () async {
-            _showMore();
-          },
-        ),
+            child: Icon(Icons.search), onPressed: _searchLocation),
       ),
     ); // This trailing comma makes auto-formatting nicer for build methods.
   }
@@ -189,7 +181,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   }
 
   _getCurrentPosition() async {
-    bloc.getLocation().then((position) {
+    widget.bloc.getLocation().then((position) {
       _position = position;
       _updatePosition(position, 0);
     });
@@ -213,35 +205,6 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     }
   }
 
-  _showMore() {
-    showCupertinoModalPopup(
-        context: context,
-        builder: (builder) {
-          return CupertinoActionSheet(
-            actions: [
-              CupertinoActionSheetAction(
-                child: Text("Tìm kiếm"),
-                onPressed: _searchLocation,
-              ),
-              CupertinoActionSheetAction(
-                child: Text("Chia sẻ vị trí"),
-                onPressed: _shareLocation,
-              ),
-              CupertinoActionSheetAction(
-                child: Text("Chụp màn hình"),
-                onPressed: _captureScreen,
-              ),
-            ],
-            cancelButton: CupertinoActionSheetAction(
-              child: Text("Hủy"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          );
-        });
-  }
-
   _searchLocation() async {
     Navigator.pop(context);
     Prediction p = await PlacesAutocomplete.show(
@@ -252,20 +215,5 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       components: [new Component(Component.country, "vn")],
     );
     displayPrediction(p, homeScaffoldKey.currentState);
-  }
-
-  _shareLocation() {}
-
-  _captureScreen() async {
-    Navigator.pop(context);
-    print("File Saved to Gallery");
-    widget.screenshotController
-        .capture(delay: Duration(milliseconds: 10))
-        .then((File image) async {
-      final result = await ImageGallerySaver.saveImage(image.readAsBytesSync());
-      print("File Saved to Gallery");
-    }).catchError((onError) {
-      print(onError);
-    });
   }
 }

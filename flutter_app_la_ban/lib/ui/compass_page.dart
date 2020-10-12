@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:ILaKinh/bloc/compass_bloc.dart';
+import 'package:ILaKinh/bloc/map_bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:rxdart/rxdart.dart';
@@ -9,15 +10,15 @@ import 'package:flutter/material.dart';
 class CompassPage extends StatefulWidget {
   double direction;
   Function(double) callBack;
-  BehaviorSubject object;
-  CompassPage({this.direction, this.callBack, this.object});
+  MapBloc bloc;
+  CompassPage({this.direction, this.callBack, this.bloc});
 
   @override
   _CompassPageState createState() => _CompassPageState();
 }
 
 class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
-  final bloc = CompassBloc();
+  //final bloc = CompassBloc();
 
   StreamSubscription _compassSub;
 
@@ -37,8 +38,8 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
       setState(() {
         alpha = double.parse((coordinate).toStringAsFixed(2)).toString();
       });
-      bloc.setValueDirection(coordinate);
-      widget.object.add(coordinate);
+      //bloc.setValueDirection(coordinate);
+      widget.bloc.setAngle(coordinate);
     });
   }
 
@@ -46,7 +47,6 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    bloc.dispose();
     _compassSub.cancel();
   }
 
@@ -67,7 +67,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
             children: [
               Container(
                 child: StreamBuilder<double>(
-                    stream: bloc.compassStream,
+                    stream: widget.bloc.stream,
                     builder: (context, snapshot) {
                       double value = widget.direction ?? 0;
                       if (snapshot.hasData) {

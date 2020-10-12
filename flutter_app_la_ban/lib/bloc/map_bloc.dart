@@ -1,6 +1,20 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:rxdart/rxdart.dart';
 
 class MapBloc {
+  BehaviorSubject<double> _object = BehaviorSubject<double>();
+  Stream<double> get stream => _object.stream;
+
+  var _currentPosition = Position(longitude: 0, latitude: 0);
+
+  updateCurrentPosition(Position newPosition) {
+    _currentPosition = newPosition;
+  }
+
+  setAngle(double value) {
+    _object.add(value);
+  }
+
   Future<Position> getLocation() async {
     Position currentLocation;
     try {
@@ -12,5 +26,7 @@ class MapBloc {
     }
   }
 
-  dispose() {}
+  dispose() {
+    _object.close();
+  }
 }
