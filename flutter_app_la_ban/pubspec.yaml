@@ -42,6 +42,7 @@ dependencies:
   screenshot: ^0.2.0
   image_gallery_saver: ^1.6.0
   flutter_share: ^1.0.2+1
+  firebase_dynamic_links: ^0.6.0+2
 
 dev_dependencies:
   flutter_test:
