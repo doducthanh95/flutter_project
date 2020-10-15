@@ -32,7 +32,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _handleDeepLink() async {
-    await _dynamicLink.handleDynamicLinks();
+    final uri = await _dynamicLink.handleDynamicLinks();
+    if (uri != null) {
+      Navigator.push(context, uri.path);
+    }
   }
 
   @override
@@ -113,7 +116,7 @@ class _HomePageState extends State<HomePage> {
     await FlutterShare.share(
         title: 'Example share',
         text: 'Example share text',
-        linkUrl: 'https://flutter.dev/',
+        linkUrl: 'https://flutterapplaban.page.link/shortUrl/?link=20',
         chooserTitle: 'Example Chooser Title');
   }
 
