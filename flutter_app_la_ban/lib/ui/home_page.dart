@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:ILaKinh/bloc/map_bloc.dart';
+import 'package:ILaKinh/service/dynamic_link_service.dart';
 import 'package:ILaKinh/ui/compass_page.dart';
 import 'package:ILaKinh/ui/map_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:screenshot/screenshot.dart';
@@ -20,11 +22,17 @@ class _HomePageState extends State<HomePage> {
   double agle = 0;
   ScreenshotController _screenshotController = ScreenshotController();
   MapBloc _bloc = MapBloc();
+  final _dynamicLink = DynamicLinkService();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _handleDeepLink();
+  }
+
+  void _handleDeepLink() async {
+    await _dynamicLink.handleDynamicLinks();
   }
 
   @override
@@ -100,6 +108,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _shareLocation() async {
+    _dynamicLink.createDynamicLink(LatLng(0, 0), 20);
     Navigator.pop(context);
     await FlutterShare.share(
         title: 'Example share',
