@@ -32,7 +32,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _handleDeepLink() async {
-    final uri = await _dynamicLink.handleDynamicLinks();
+    String uri = await _dynamicLink.handleDynamicLinks();
+
     if (uri != null) {
       Navigator.push(context, uri.path);
     }
@@ -87,10 +88,6 @@ class _HomePageState extends State<HomePage> {
         builder: (builder) {
           return CupertinoActionSheet(
             actions: [
-              CupertinoActionSheetAction(
-                child: Text("Xoay theo bản đồ"),
-                onPressed: () {},
-              ),
               CupertinoActionSheetAction(
                 child: Text("Chia sẻ vị trí"),
                 onPressed: _shareLocation,

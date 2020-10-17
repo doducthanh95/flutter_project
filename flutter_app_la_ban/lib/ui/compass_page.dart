@@ -21,6 +21,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
   //final bloc = CompassBloc();
 
   StreamSubscription _compassSub;
+  StreamSubscription _compassSubMap;
 
   String alpha = "0";
   double alphaRotate = 0;
@@ -41,6 +42,14 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
       //bloc.setValueDirection(coordinate);
       widget.bloc.setAngle(coordinate);
     });
+
+    _compassSubMap = widget.bloc.streamMap.listen((event) {
+      alphaRotate = event;
+      setState(() {
+        alpha = double.parse((event).toStringAsFixed(2)).toString();
+      });
+      setState(() {});
+    });
   }
 
   @override
@@ -48,6 +57,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
     // TODO: implement dispose
     super.dispose();
     _compassSub.cancel();
+    _compassSubMap.cancel();
   }
 
   @override

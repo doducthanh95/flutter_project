@@ -77,10 +77,10 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       }
     });
 
-    subscriptionCompass = widget.bloc.stream.listen((value) {
-      angle = value;
-      _updatePosition(_position, angle);
-    });
+    // subscriptionCompass = widget.bloc.stream.listen((value) {
+    //   angle = value;
+    //   _updatePosition(_position, angle);
+    // });
   }
 
   @override
@@ -105,7 +105,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         buildingsEnabled: true,
         myLocationEnabled: true,
         mapToolbarEnabled: true,
-        rotateGesturesEnabled: false,
+        rotateGesturesEnabled: true,
         compassEnabled: true,
         mapType: MapType.hybrid,
         indoorViewEnabled: true,
@@ -114,6 +114,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
           _controller.complete(controller);
         },
         onCameraMove: (p) {
+          widget.bloc.setAngleForCompass(p.bearing);
           _zoom = p.zoom;
           _position = Position(
               latitude: p.target.latitude, longitude: p.target.longitude);

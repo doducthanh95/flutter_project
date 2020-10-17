@@ -1,4 +1,6 @@
+import 'package:ILaKinh/ui/home_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DynamicLinkService {
@@ -27,7 +29,7 @@ class DynamicLinkService {
   Future<String> createDynamicLink(LatLng lat, double zoom) async {
     final ShortDynamicLink shortenedLink =
         await DynamicLinkParameters.shortenUrl(Uri.parse(
-            'https://flutterapplaban.page.link/shortUrl/?link=$zoom'));
+            'https://flutterapplaban.page.link/shortUrl/?lat=${lat.latitude}&long=${lat.longitude}'));
 
     final Uri shortUrl = shortenedLink.shortUrl;
     return shortUrl.toString();
