@@ -28,7 +28,7 @@ class DynamicLinkService {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: 'https://flutterapplaban.page.link',
         link: Uri.parse(
-          'https://www.compound.com/post?lat=${lat.latitude}&long=${lat.longitude}',
+          'https://www.compound.com/post?lat=${lat.latitude}?long=${lat.longitude}',
         ),
         androidParameters: AndroidParameters(
           packageName: 'com.example.flutter_app_la_ban',

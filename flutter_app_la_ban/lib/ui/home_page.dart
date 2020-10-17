@@ -33,15 +33,23 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _handleDeepLink() async {
-    await _dynamicLink.handleDynamicLinks();
+    String link = await _dynamicLink.handleDynamicLinks();
+    if (link != null) {
+      final array = link.split('?');
+      if (array.length < 1) return;
+      double lat = double.tryParse(array[1].split('=').last) ?? 0;
+      double long = double.tryParse(array[2].split('=').last) ?? 0;
+
+      _bloc.setPositionFromDeepLink(LatLng(lat, long));
+    }
   }
 
-  @override
-  void didUpdateWidget(covariant HomePage oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-    _handleDeepLink();
-  }
+  // @override
+  // void didUpdateWidget(covariant HomePage oldWidget) {
+  //   // TODO: implement didUpdateWidget
+  //   super.didUpdateWidget(oldWidget);
+  //   _handleDeepLink();
+  // }
 
   @override
   void dispose() {

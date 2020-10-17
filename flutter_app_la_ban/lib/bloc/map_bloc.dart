@@ -5,13 +5,19 @@ import 'package:rxdart/rxdart.dart';
 class MapBloc {
   BehaviorSubject<double> _object = BehaviorSubject<double>();
   BehaviorSubject<double> _objectMap = BehaviorSubject<double>();
+  BehaviorSubject<LatLng> _objectDeepLink = BehaviorSubject<LatLng>();
   Stream<double> get stream => _object.stream;
   Stream<double> get streamMap => _objectMap.stream;
+  Stream<LatLng> get streamDeepLink => _objectDeepLink.stream;
 
   var _currentPosition = Position(longitude: 0, latitude: 0);
 
   updateCurrentPosition(Position newPosition) {
     _currentPosition = newPosition;
+  }
+
+  void setPositionFromDeepLink(LatLng lat) {
+    _objectDeepLink.add(lat);
   }
 
   LatLng getPosition() {
@@ -39,5 +45,7 @@ class MapBloc {
 
   dispose() {
     _object.close();
+    _objectMap.close();
+    _objectDeepLink.close();
   }
 }

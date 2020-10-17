@@ -77,10 +77,10 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       }
     });
 
-    // subscriptionCompass = widget.bloc.stream.listen((value) {
-    //   angle = value;
-    //   _updatePosition(_position, angle);
-    // });
+    subscriptionCompass = widget.bloc.streamDeepLink.listen((event) {
+      _updatePosition(
+          Position(latitude: event.latitude, longitude: event.longitude), 20);
+    });
   }
 
   @override
@@ -115,6 +115,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
         },
         onCameraMove: (p) {
           widget.bloc.setAngleForCompass(p.bearing);
+          widget.bloc.updateCurrentPosition(Position(
+              latitude: p.target.latitude, longitude: p.target.longitude));
           _zoom = p.zoom;
           _position = Position(
               latitude: p.target.latitude, longitude: p.target.longitude);
@@ -200,9 +202,9 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
 
       _updatePosition(Position(longitude: lng, latitude: lat), 0);
 
-      scaffold.showSnackBar(
-        SnackBar(content: Text("${p.description} - $lat/$lng")),
-      );
+      // scaffold.showSnackBar(
+      //   SnackBar(content: Text("${p.description} - $lat/$lng")),
+      // );
     }
   }
 
