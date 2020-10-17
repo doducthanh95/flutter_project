@@ -15,11 +15,13 @@ class DynamicLinkService {
     });
   }
 
-  void _handleDeepLink(PendingDynamicLinkData data) {
+  Uri _handleDeepLink(PendingDynamicLinkData data) {
     final Uri deepLink = data?.link;
+
     if (deepLink != null) {
       print('_handleDeepLink: ${data.link}');
     }
+    return deepLink;
   }
 
   Future<String> createDynamicLink(LatLng lat, double zoom) async {
