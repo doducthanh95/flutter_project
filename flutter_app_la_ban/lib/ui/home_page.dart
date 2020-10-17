@@ -5,6 +5,7 @@ import 'package:ILaKinh/bloc/map_bloc.dart';
 import 'package:ILaKinh/service/dynamic_link_service.dart';
 import 'package:ILaKinh/ui/compass_page.dart';
 import 'package:ILaKinh/ui/map_page.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
@@ -18,7 +19,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   double agle = 0;
   ScreenshotController _screenshotController = ScreenshotController();
   MapBloc _bloc = MapBloc();
@@ -33,6 +34,13 @@ class _HomePageState extends State<HomePage> {
 
   void _handleDeepLink() async {
     await _dynamicLink.handleDynamicLinks();
+  }
+
+  @override
+  void didUpdateWidget(covariant HomePage oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    _handleDeepLink();
   }
 
   @override
@@ -108,13 +116,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _shareLocation() async {
-    _dynamicLink.createDynamicLink(LatLng(0, 0), 20);
+    String url = await _dynamicLink.createDynamicLink(_bloc.getPosition(), 20);
     Navigator.pop(context);
-    await FlutterShare.share(
-        title: 'Example share',
-        text: 'Example share text',
-        linkUrl: 'https://flutter.dev/',
-        chooserTitle: 'Example Chooser Title');
+    await FlutterShare.share(title: "Share", linkUrl: url);
   }
 
   _captureScreen() async {

@@ -1,4 +1,5 @@
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 
 class MapBloc {
@@ -9,6 +10,10 @@ class MapBloc {
 
   updateCurrentPosition(Position newPosition) {
     _currentPosition = newPosition;
+  }
+
+  LatLng getPosition() {
+    return LatLng(_currentPosition.latitude, _currentPosition.longitude);
   }
 
   setAngle(double value) {
