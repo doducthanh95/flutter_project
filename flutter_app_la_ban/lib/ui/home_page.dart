@@ -2,15 +2,20 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:ILaKinh/bloc/map_bloc.dart';
+import 'package:ILaKinh/const/const_value.dart';
 import 'package:ILaKinh/service/dynamic_link_service.dart';
 import 'package:ILaKinh/ui/compass_page.dart';
 import 'package:ILaKinh/ui/map_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -22,34 +27,31 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   double agle = 0;
   ScreenshotController _screenshotController = ScreenshotController();
-  MapBloc _bloc = MapBloc();
-  final _dynamicLink = DynamicLinkService();
+  final _bloc = MapBloc();
+  DynamicLinkService _dynamicLink;
+
+  var testLink = '123456';
 
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+    _dynamicLink = DynamicLinkService(_bloc);
     _handleDeepLink();
+    super.initState();
   }
 
   void _handleDeepLink() async {
-    String link = await _dynamicLink.handleDynamicLinks();
-    if (link != null) {
-      final array = link.split('?');
-      if (array.length < 1) return;
-      double lat = double.tryParse(array[1].split('=').last) ?? 0;
-      double long = double.tryParse(array[2].split('=').last) ?? 0;
-
-      _bloc.setPositionFromDeepLink(LatLng(lat, long));
-    }
+    _dynamicLink.handleDynamicLinks();
   }
 
-  // @override
-  // void didUpdateWidget(covariant HomePage oldWidget) {
-  //   // TODO: implement didUpdateWidget
-  //   super.didUpdateWidget(oldWidget);
-  //   _handleDeepLink();
-  // }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    if (state == AppLifecycleState.resumed) {
+      _handleDeepLink();
+    }
+    super.didChangeAppLifecycleState(state);
+  }
 
   @override
   void dispose() {
@@ -59,33 +61,29 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("La bàn số"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: _showMore,
-          )
-        ],
-      ),
-      body: Screenshot(
-        controller: _screenshotController,
-        child: Container(
+    return Screenshot(
+      controller: _screenshotController,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("La bàn số"),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: _showMore,
+            )
+          ],
+        ),
+        body: Container(
           child: Stack(
             alignment: Alignment.center,
             children: [
               MapPage(
                 bloc: _bloc,
+                parentContext: context,
               ),
               IgnorePointer(
                   child: CompassPage(
                 bloc: _bloc,
-                callBack: (double value) {
-                  setState(() {
-                    agle = value;
-                  });
-                },
               ))
             ],
           ),
@@ -101,9 +99,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           return CupertinoActionSheet(
             actions: [
               CupertinoActionSheetAction(
-                child: Text("Chia sẻ vị trí"),
-                onPressed: _shareLocation,
-              ),
+                  child: Text("Chia sẻ vị trí"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _shareLocation();
+                  }),
               CupertinoActionSheetAction(
                 child: Text("Chụp màn hình"),
                 onPressed: _captureScreen,
@@ -121,18 +121,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Future<void> _shareLocation() async {
     String url = await _dynamicLink.createDynamicLink(_bloc.getPosition(), 20);
-    Navigator.pop(context);
     await FlutterShare.share(title: "Share", linkUrl: url);
   }
 
   _captureScreen() async {
     Navigator.pop(context);
     print("File Saved to Gallery");
+
     _screenshotController
         .capture(delay: Duration(milliseconds: 10))
         .then((File image) async {
-      final result = await ImageGallerySaver.saveImage(image.readAsBytesSync());
-      print("File Saved to Gallery");
+      GallerySaver.saveImage(image.path)
+          .then((value) => showToast("Lưu ảnh thành công!"));
     }).catchError((onError) {
       print(onError);
     });

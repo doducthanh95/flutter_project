@@ -12,6 +12,9 @@ class MapBloc {
 
   var _currentPosition = Position(longitude: 0, latitude: 0);
 
+  bool isShowCurrentPositon = true;
+  Position positionDeepLink;
+
   updateCurrentPosition(Position newPosition) {
     _currentPosition = newPosition;
   }
@@ -37,7 +40,11 @@ class MapBloc {
     try {
       currentLocation =
           await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      return currentLocation;
+      if (!isShowCurrentPositon && positionDeepLink != null) {
+        return positionDeepLink;
+      } else {
+        return currentLocation;
+      }
     } on Exception {
       return null;
     }

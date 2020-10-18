@@ -19,24 +19,23 @@ import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/geolocation.dart';
 import 'package:google_maps_webservice/staticmap.dart';
 import 'package:google_maps_webservice/timezone.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiAndroidKey);
 
 class MapPage extends StatefulWidget {
   MapBloc bloc;
-  MapPage({this.bloc});
+  BuildContext parentContext;
+
+  MapPage({this.bloc, this.parentContext});
 
   @override
   _MapPageState createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
 
   final homeScaffoldKey = GlobalKey<ScaffoldState>();
   Position _position =
@@ -64,18 +63,18 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
 
     super.initState();
 
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      // Got a new connectivity status!
-      if (!(result == ConnectivityResult.none)) {
-        homeScaffoldKey.currentState.showSnackBar(SnackBar(
-          content: Text("Không có kết nối internet"),
-          backgroundColor: Colors.orange,
-          duration: Duration(seconds: 2),
-        ));
-      }
-    });
+    // subscription = Connectivity()
+    //     .onConnectivityChanged
+    //     .listen((ConnectivityResult result) {
+    //   // Got a new connectivity status!
+    //   if (!(result == ConnectivityResult.none)) {
+    //     homeScaffoldKey.currentState.showSnackBar(SnackBar(
+    //       content: Text("Không có kết nối internet"),
+    //       backgroundColor: Colors.orange,
+    //       duration: Duration(seconds: 2),
+    //     ));
+    //   }
+    // });
 
     subscriptionCompass = widget.bloc.streamDeepLink.listen((event) {
       _updatePosition(
@@ -84,51 +83,49 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeDependencies() async {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
-  }
-
-  @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    subscription.cancel();
+    //subscription.cancel();
     subscriptionCompass.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: homeScaffoldKey,
-      body: GoogleMap(
-        buildingsEnabled: true,
-        myLocationEnabled: true,
-        mapToolbarEnabled: true,
-        rotateGesturesEnabled: true,
-        compassEnabled: true,
-        mapType: MapType.hybrid,
-        indoorViewEnabled: true,
-        initialCameraPosition: _kGooglePlex,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        onCameraMove: (p) {
-          widget.bloc.setAngleForCompass(p.bearing);
-          widget.bloc.updateCurrentPosition(Position(
-              latitude: p.target.latitude, longitude: p.target.longitude));
-          _zoom = p.zoom;
-          _position = Position(
-              latitude: p.target.latitude, longitude: p.target.longitude);
-        },
-      ),
-      floatingActionButton: Padding(
-        padding:
-            EdgeInsets.only(right: (MediaQuery.of(context).size.width - 100)),
-        child: FloatingActionButton(
-            child: Icon(Icons.search), onPressed: _searchLocation),
-      ),
-    ); // This trailing comma makes auto-formatting nicer for build methods.
+    return Stack(
+      children: [
+        GoogleMap(
+          buildingsEnabled: true,
+          myLocationEnabled: true,
+          mapToolbarEnabled: true,
+          rotateGesturesEnabled: true,
+          compassEnabled: true,
+          mapType: MapType.hybrid,
+          indoorViewEnabled: true,
+          initialCameraPosition: _kGooglePlex,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
+          onCameraMove: (p) {
+            widget.bloc.setAngleForCompass(p.bearing);
+            widget.bloc.updateCurrentPosition(Position(
+                latitude: p.target.latitude, longitude: p.target.longitude));
+            _zoom = p.zoom;
+            _position = Position(
+                latitude: p.target.latitude, longitude: p.target.longitude);
+          },
+        ),
+        Positioned(
+          left: 20,
+          bottom: 10,
+          child: FloatingActionButton(
+              child: Icon(Icons.search),
+              onPressed: () {
+                _searchLocation();
+              }),
+        ),
+      ],
+    );
   }
 
   _updatePosition(Position data, double agle) {
@@ -185,8 +182,12 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
 
   _getCurrentPosition() async {
     widget.bloc.getLocation().then((position) {
-      _position = position;
-      _updatePosition(position, 0);
+      if (widget.bloc.isShowCurrentPositon) {
+        _position = position;
+        _updatePosition(position, 0);
+      } else {
+        _updatePosition(widget.bloc.positionDeepLink, 0);
+      }
     });
   }
 
@@ -209,9 +210,8 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   }
 
   _searchLocation() async {
-    Navigator.pop(context);
     Prediction p = await PlacesAutocomplete.show(
-      context: context,
+      context: widget.parentContext,
       apiKey: kGoogleApiAndroidKey,
       mode: Mode.overlay, // Mode.fullscreen
       language: "vi",
