@@ -61,6 +61,14 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
     _getCurrentPosition();
     _fetchPermissionStatus();
 
+    widget.bloc.streamTakeImage.listen((event) {
+      return _controller.future.then((value) {
+        value
+            .takeSnapshot()
+            .then((value) => widget.bloc.createGoogleMapImage(value));
+      });
+    });
+
     super.initState();
 
     // subscription = Connectivity()
