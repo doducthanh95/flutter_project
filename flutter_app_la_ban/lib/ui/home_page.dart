@@ -38,6 +38,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Uint8List _image;
   Uint8List _image2;
+  bool _isShowChildScreen = false;
 
   @override
   void initState() {
@@ -75,52 +76,66 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Screenshot(
-      controller: _screenshotController,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("La bàn số"),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: _showMore,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("La bàn số"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: _showMore,
+          )
+        ],
+      ),
+      body: Container(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            MapPage(
+              bloc: _bloc,
+              parentContext: context,
+            ),
+            RepaintBoundary(
+              key: _containerKey,
+              child: IgnorePointer(
+                  child: CompassPage(
+                bloc: _bloc,
+              )),
+            ),
+            Visibility(
+              visible: _isShowChildScreen,
+              child: _captureScreenWidget(),
             )
           ],
         ),
-        body: Container(
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              MapPage(
-                bloc: _bloc,
-                parentContext: context,
-              ),
-              RepaintBoundary(
-                key: _containerKey,
-                child: IgnorePointer(
-                    child: CompassPage(
-                  bloc: _bloc,
-                )),
-              ),
-              _image != null
-                  ? Container(
-                      width: 150,
-                      height: 200,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Image(
-                            image: MemoryImage(_image),
-                          ),
-                          Image(image: MemoryImage(_image2))
-                        ],
-                      ))
-                  : Container()
-            ],
-          ),
-        ),
       ),
     );
+  }
+
+  Widget _captureScreenWidget() {
+    return _image == null
+        ? Container()
+        : Positioned(
+            bottom: 16,
+            left: 16,
+            child: Container(
+              width: MediaQuery.of(context).size.width / 4,
+              height: MediaQuery.of(context).size.height / 4 - 20,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.blue)),
+              child: Screenshot(
+                controller: _screenshotController,
+                child: Stack(
+                  children: [
+                    Image(
+                      image: MemoryImage(_image),
+                    ),
+                    Image(image: MemoryImage(_image2))
+                  ],
+                ),
+              ),
+            ),
+          );
   }
 
   _showMore() {
@@ -167,19 +182,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         await boxImage.toByteData(format: ui.ImageByteFormat.png);
     Uint8List uInt8List = byteData.buffer.asUint8List();
     _image2 = uInt8List;
-    setState(() {});
+    setState(() {
+      _isShowChildScreen = true;
+    });
 
-    // File newFile = File.fromRawPath(uInt8List);
-    //
-    // _screenshotController
-    //     .capture(delay: Duration(milliseconds: 10))
-    //     .then((File image) async {
-    //   GallerySaver.saveImage(image.path).then((value) async {
-    //     showToast("Lưu ảnh thành công!");
-    //     image = await newFile.writeAsBytes(uInt8List);
-    //   });
-    // }).catchError((onError) {
-    //   print(onError);
-    // });
+    var _newFile = await _screenshotController.capture(pixelRatio: 10);
+    await GallerySaver.saveImage(_newFile.path);
+    Future.delayed(Duration(seconds: 2)).then((value) {
+      setState(() {
+        _isShowChildScreen = false;
+      });
+    });
   }
 }

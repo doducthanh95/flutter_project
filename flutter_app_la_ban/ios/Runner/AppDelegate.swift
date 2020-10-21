@@ -15,6 +15,7 @@ import Firebase
     if FirebaseApp.app() == nil {
         FirebaseApp.configure()
     }
+    FirebaseOptions.defaultOptions()?.deepLinkURLScheme = "https://flutterapplink.page.link"
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
