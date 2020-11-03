@@ -9,16 +9,7 @@ class DynamicLinkService {
   DynamicLinkService(this.mapBloc);
 
   Future<Uri> handleDynamicLinks() async {
-    // final PendingDynamicLinkData data =
-    //     await FirebaseDynamicLinks.instance.getInitialLink();
-    // _handleDeepLink(data);
-    //
-    // FirebaseDynamicLinks.instance.onLink(
-    //     onSuccess: (PendingDynamicLinkData dynamicLinkData) async {
-    //   _handleDeepLink(dynamicLinkData);
-    // }, onError: (OnLinkErrorException e) {
-    //   print('DynamicLink error ${e.message}');
-    // });
+    await Future.delayed(Duration(seconds: 3));
 
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
@@ -52,6 +43,7 @@ class DynamicLinkService {
       if (array.length < 1) return null;
       double lat = double.tryParse(array[1]) ?? 0;
       double long = double.tryParse(array[2]) ?? 0;
+      mapBloc.zoom = double.tryParse(array[3]) ?? 20;
       mapBloc.isShowCurrentPositon = false;
       mapBloc.positionDeepLink = Position(latitude: lat, longitude: long);
       mapBloc.setPositionFromDeepLink(LatLng(lat, long));
@@ -63,7 +55,7 @@ class DynamicLinkService {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: 'https://flutterapplaban.page.link',
         link: Uri.parse(
-          'https://www.compound.com/post&${lat.latitude}&${lat.longitude}',
+          'https://flutterapplaban.page.link/post&${lat.latitude}&${lat.longitude}&${mapBloc.zoom}',
         ),
         androidParameters: AndroidParameters(
           packageName: 'com.example.flutter_app_la_ban',
@@ -71,6 +63,7 @@ class DynamicLinkService {
         iosParameters: IosParameters(
             bundleId: 'com.example.flutterAppLaBan',
             minimumVersion: '1.0',
+            //appStoreId: "1481524675"));
             appStoreId: '1534484049'));
     ShortDynamicLink dynamicUrl = await parameters.buildShortLink();
     return dynamicUrl.shortUrl.toString();

@@ -17,6 +17,7 @@ class MapBloc {
   Stream<bool> get streamTakeImage => _objectTakeImage.stream;
 
   var _currentPosition = Position(longitude: 0, latitude: 0);
+  double zoom = 20;
 
   bool isShowCurrentPositon = true;
   Position positionDeepLink;

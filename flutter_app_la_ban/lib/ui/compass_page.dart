@@ -88,10 +88,8 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
                               opacity: 1,
                               child: Image.asset(
                                 "assets/images/compass.png",
-                                width:
-                                    MediaQuery.of(context).size.width * 9 / 10,
-                                height:
-                                    MediaQuery.of(context).size.width * 9 / 10,
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                height: MediaQuery.of(context).size.width * 0.9,
                               )),
                         );
                       } else {

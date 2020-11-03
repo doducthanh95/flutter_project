@@ -41,7 +41,6 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
   Position _position =
       Position(latitude: 37.42796133580664, longitude: -122.085749655962);
   double angle = 0;
-  double _zoom = 20;
 
   CameraPosition _kGooglePlex;
 
@@ -54,7 +53,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       target: LatLng(_position.latitude, _position.longitude),
       tilt: 10,
       bearing: angle,
-      zoom: _zoom,
+      zoom: widget.bloc.zoom,
     );
     // TODO: implement initState
     WidgetsBinding.instance.addObserver(this);
@@ -118,7 +117,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
             widget.bloc.setAngleForCompass(p.bearing);
             widget.bloc.updateCurrentPosition(Position(
                 latitude: p.target.latitude, longitude: p.target.longitude));
-            _zoom = p.zoom;
+            widget.bloc.zoom = p.zoom;
             _position = Position(
                 latitude: p.target.latitude, longitude: p.target.longitude);
           },
@@ -141,7 +140,7 @@ class _MapPageState extends State<MapPage> with WidgetsBindingObserver {
       var position = CameraPosition(
           target: LatLng(data.latitude, data.longitude),
           bearing: agle ?? 0,
-          zoom: _zoom);
+          zoom: widget.bloc.zoom);
       value.moveCamera(CameraUpdate.newCameraPosition(position));
     });
   }
