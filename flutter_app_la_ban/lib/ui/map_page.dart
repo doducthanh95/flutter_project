@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:ILaKinh/bloc/compass_bloc.dart';
-import 'package:ILaKinh/bloc/map_bloc.dart';
-import 'package:ILaKinh/const/const_value.dart';
+import 'package:LaKinhVLC/bloc/compass_bloc.dart';
+import 'package:LaKinhVLC/bloc/map_bloc.dart';
+import 'package:LaKinhVLC/const/const_value.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';

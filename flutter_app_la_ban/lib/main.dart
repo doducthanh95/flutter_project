@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ILaKinh/ui/home_page.dart';
+import 'package:LaKinhVLC/ui/home_page.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'ui/home_page.dart';
 

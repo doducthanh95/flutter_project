@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:ILaKinh/bloc/map_bloc.dart';
-import 'package:ILaKinh/const/const_value.dart';
-import 'package:ILaKinh/service/dynamic_link_service.dart';
-import 'package:ILaKinh/ui/compass_page.dart';
-import 'package:ILaKinh/ui/map_page.dart';
+import 'package:LaKinhVLC/bloc/map_bloc.dart';
+import 'package:LaKinhVLC/const/const_value.dart';
+import 'package:LaKinhVLC/service/dynamic_link_service.dart';
+import 'package:LaKinhVLC/ui/compass_page.dart';
+import 'package:LaKinhVLC/ui/map_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

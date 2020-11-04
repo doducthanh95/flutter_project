@@ -1,4 +1,4 @@
-import 'package:ILaKinh/bloc/map_bloc.dart';
+import 'package:LaKinhVLC/bloc/map_bloc.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:ILaKinh/bloc/compass_bloc.dart';
-import 'package:ILaKinh/bloc/map_bloc.dart';
+import 'package:LaKinhVLC/bloc/compass_bloc.dart';
+import 'package:LaKinhVLC/bloc/map_bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:rxdart/rxdart.dart';
@@ -86,7 +86,7 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
                         return Transform.rotate(
                           angle: value * (pi / 180) * -1,
                           child: Opacity(
-                              opacity: 1,
+                              opacity: 0.5,
                               child: Image.asset(
                                 "assets/images/compass.png",
                                 width: MediaQuery.of(context).size.width * 0.9,
