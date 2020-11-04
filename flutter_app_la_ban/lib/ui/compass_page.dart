@@ -44,11 +44,12 @@ class _CompassPageState extends State<CompassPage> with WidgetsBindingObserver {
     });
 
     _compassSubMap = widget.bloc.streamMap.listen((event) {
+      print('ddthanh');
       alphaRotate = event;
       setState(() {
         alpha = double.parse((event).toStringAsFixed(2)).toString();
       });
-      setState(() {});
+      widget.bloc.setAngle(alphaRotate);
     });
   }
 
