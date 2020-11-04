@@ -45,6 +45,7 @@ dependencies:
   gallery_saver: ^2.0.1
   flutter_styled_toast: ^1.4.0+1
   image_picker: ^0.6.7+12
+  share: ^0.6.5+4
 
 dev_dependencies:
   flutter_test:

@@ -17,6 +17,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:screenshot/screenshot.dart';
 import 'dart:ui' as ui;
 
+import 'package:share/share.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -184,7 +186,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Future<void> _shareLocation() async {
     String url = await _dynamicLink.createDynamicLink(_bloc.getPosition(), 20);
-    await FlutterShare.share(title: "Share", linkUrl: url);
+    await Share.share(url,
+        subject: "Chia sẻ vị trí",
+        sharePositionOrigin: Rect.fromLTRB(0, 0, 0, 0));
+    //await FlutterShare.share(title: "Share", linkUrl: url);
   }
 
   _captureScreen() async {
